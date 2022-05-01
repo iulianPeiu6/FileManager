@@ -4,30 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class FileExplorer extends StatefulWidget {
+  const FileExplorer({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<FileExplorer> createState() => _FileExplorerState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _FileExplorerState extends State<FileExplorer> {
   String currentRelativePath = "";
-  Future<List<FileSystemEntity>> _files() async {
-    var dir = await getExternalStorageDirectory();
-    dir = Directory(join(dir?.path as String, currentRelativePath));
-    var files = dir.list().toList();
-    return files;
-  }
-
-  _goToDirectory(String directory) {
-    setState(() { 
-      currentRelativePath = join(currentRelativePath, directory);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,6 +40,19 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       ),
     );
+  }
+
+  Future<List<FileSystemEntity>> _files() async {
+    var dir = await getExternalStorageDirectory();
+    dir = Directory(join(dir?.path as String, currentRelativePath));
+    var files = dir.list().toList();
+    return files;
+  }
+
+  _goToDirectory(String directory) {
+    setState(() { 
+      currentRelativePath = join(currentRelativePath, directory);
+    });
   }
 
   _deleteFile(FileSystemEntity file) {

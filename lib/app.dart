@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'widgets/home.dart';
+import 'widgets/file_explorer.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'File Explorer'),
+      home: const FileExplorer(title: 'File Explorer'),
     );
   }
 }
