@@ -42,7 +42,7 @@ class _FileItemState extends State<FileItem> {
           }).toList();
         },
       ),
-      subtitle: Text(_getFileDetails(widget.file)),
+      subtitle: (widget.file is File) ? Text(_getFileDetails(widget.file)) : null,
       onTap: widget.onTap
     );
   }

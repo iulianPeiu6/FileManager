@@ -13,6 +13,7 @@ class FileDetails extends StatefulWidget {
 class _FileDetailsState extends State<FileDetails> {
   @override
   Widget build(BuildContext context) {
+    print ("in build details");
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title)

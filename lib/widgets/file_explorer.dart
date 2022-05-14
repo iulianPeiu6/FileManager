@@ -15,7 +15,7 @@ class FileExplorer extends StatefulWidget {
 }
 
 class _FileExplorerState extends State<FileExplorer> {
-  final GlobalKey<FormState> _keyDialogForm = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _keyDialogForm = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -62,9 +62,6 @@ class _FileExplorerState extends State<FileExplorer> {
               child: Column(
                 children: <Widget>[
                   TextFormField(
-                    // decoration: const InputDecoration(
-                    //   icon: Icon(Icons.create_new_folder),
-                    // ),
                     textAlign: TextAlign.center,
                     onSaved: (val) {
                       setState(() {
@@ -90,13 +87,13 @@ class _FileExplorerState extends State<FileExplorer> {
                     Navigator.pop(context);
                   }
                 },
-                child: Text('Save')
+                child: const Text('Save')
               ),
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text('Cancel')),
+                  child: const Text('Cancel')),
             ],
           );
         });
@@ -122,7 +119,7 @@ class _FileExplorerState extends State<FileExplorer> {
     Navigator.of(context)
       .push(
         MaterialPageRoute(builder: (context) {
-          return FileDetails(title: path, path: path);
+          return FileDetails(title: widget.title, path: path);
         })
       );
   }
