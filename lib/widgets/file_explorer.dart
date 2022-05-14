@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:filemanager/widgets/shared/file_item.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'file_details.dart';
 
@@ -16,6 +15,8 @@ class FileExplorer extends StatefulWidget {
 }
 
 class _FileExplorerState extends State<FileExplorer> {
+  final GlobalKey<FormState> _keyDialogForm = new GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,11 +44,7 @@ class _FileExplorerState extends State<FileExplorer> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          var dir = await getExternalStorageDirectory();
-          await Directory(join(dir?.path as String, widget.path, "newFolder4R")).create();
-          setState(() {
-            
-          });
+          _showCreateDirectoryDialog(context);
         },
         backgroundColor: Colors.blue,
         child: const Icon(Icons.create_new_folder),
@@ -55,6 +52,56 @@ class _FileExplorerState extends State<FileExplorer> {
     );
   }
 
+  Future _showCreateDirectoryDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Form(
+              key: _keyDialogForm,
+              child: Column(
+                children: <Widget>[
+                  TextFormField(
+                    // decoration: const InputDecoration(
+                    //   icon: Icon(Icons.create_new_folder),
+                    // ),
+                    textAlign: TextAlign.center,
+                    onSaved: (val) {
+                      setState(() {
+                        Directory(join(widget.path, val)).createSync();
+                      });
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter a folder name';
+                      }
+
+                      return null;
+                    },
+                  )
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  if (_keyDialogForm.currentState!.validate()) {
+                    _keyDialogForm.currentState!.save();
+                    Navigator.pop(context);
+                  }
+                },
+                child: Text('Save')
+              ),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Cancel')),
+            ],
+          );
+        });
+  }
+ 
   Future<List<FileSystemEntity>> _files() async {
     var dir = Directory(widget.path);
     var files = dir.list().toList();
