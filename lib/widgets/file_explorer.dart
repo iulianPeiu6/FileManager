@@ -54,49 +54,49 @@ class _FileExplorerState extends State<FileExplorer> {
 
   Future _showCreateDirectoryDialog(BuildContext context) {
     return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Form(
-              key: _keyDialogForm,
-              child: Column(
-                children: <Widget>[
-                  TextFormField(
-                    textAlign: TextAlign.center,
-                    onSaved: (val) {
-                      setState(() {
-                        Directory(join(widget.path, val)).createSync();
-                      });
-                    },
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Enter a folder name';
-                      }
-
-                      return null;
-                    },
-                  )
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  if (_keyDialogForm.currentState!.validate()) {
-                    _keyDialogForm.currentState!.save();
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text('Save')
-              ),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Form(
+            key: _keyDialogForm,
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  textAlign: TextAlign.center,
+                  onSaved: (val) {
+                    setState(() {
+                      Directory(join(widget.path, val)).createSync();
+                    });
                   },
-                  child: const Text('Cancel')),
-            ],
-          );
-        });
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Enter a folder name';
+                    }
+
+                    return null;
+                  },
+                )
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                if (_keyDialogForm.currentState!.validate()) {
+                  _keyDialogForm.currentState!.save();
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('Save')
+            ),
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel')),
+          ],
+        );
+      });
   }
  
   Future<List<FileSystemEntity>> _files() async {
