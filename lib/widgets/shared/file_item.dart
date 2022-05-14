@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 
 class FileItem extends StatefulWidget {
   final FileSystemEntity file;
-  final void Function()? onTap;
-  final void Function(FileSystemEntity) onDeleteFile;
-  final void Function()? onDetailsFile;
+  final void Function() onTap;
+  final void Function() onDeleteFile;
+  final void Function() onDetailsFile;
 
   const FileItem({
     Key? key,
-    this.onTap,
+    required this.onTap,
     required this.file,
     required this.onDeleteFile,
     required this.onDetailsFile
@@ -33,44 +33,49 @@ class _FileItemState extends State<FileItem> {
       trailing: PopupMenuButton(
         icon: const Icon(Icons.more_vert),
         itemBuilder: (BuildContext context) {
-          return fileOptions.map((String option) {
-            return PopupMenuItem(
-              value: option,
-              child: Text(option),
-              onTap: () => _handleFileOption(option)
-            );
-          }).toList();
+          return [
+            const PopupMenuItem(
+              value: "Open",
+              child: Text("Open")
+            ),
+            const PopupMenuItem(
+              value: "Details",
+              child: Text("Details")
+            ),
+            const PopupMenuItem(
+              value: "Delete",
+              child: Text("Delete")
+            ),
+          ];
+        },
+        onSelected: (selectedItem) {
+          switch(selectedItem) { 
+            case "Open": { 
+              widget.onTap();
+            } 
+            break; 
+
+            case "Details": { 
+              widget.onDetailsFile();
+            } 
+            break; 
+
+            case "Delete": { 
+              widget.onDeleteFile();
+            } 
+            break; 
+          } 
         },
       ),
       subtitle: (widget.file is File) ? Text(_getFileDetails(widget.file)) : null,
-      onTap: widget.onTap
+      onTap: widget.onTap,
+      onLongPress: widget.onDetailsFile,
     );
   }
 
   String _getFileDetails(FileSystemEntity file) {
     var stat = file.statSync();
     return "${stat.modeString()} | ${stat.size} bytes";
-  }
-
-  _handleFileOption(String option) {
-    if (option == _FileOption.rename) {
-      _renameFile(widget.file);
-    }
-    else if (option == _FileOption.delete) {
-      widget.onDeleteFile(widget.file);
-    }
-    else if (option == _FileOption.open) {
-      widget.onTap;
-    }
-    else if (option == _FileOption.details) {
-      widget.onDetailsFile;
-    }
-  }
-
-  _renameFile(FileSystemEntity file) {
-    setState(() {
-      
-    });
   }
 }
 

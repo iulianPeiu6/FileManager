@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class FileDetails extends StatefulWidget {
-  const FileDetails({Key? key, required this.title, required this.path}) : super(key: key);
+  const FileDetails({Key? key, required this.title, required this.file}) : super(key: key);
 
   final String title;
-  final String path;
+  final FileSystemEntity file;
 
   @override
   State<FileDetails> createState() => _FileDetailsState();
@@ -13,12 +15,11 @@ class FileDetails extends StatefulWidget {
 class _FileDetailsState extends State<FileDetails> {
   @override
   Widget build(BuildContext context) {
-    print ("in build details");
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title)
       ),
-      body: Text(widget.path)
+      body: Text(widget.file.path)
     );
   }
 }

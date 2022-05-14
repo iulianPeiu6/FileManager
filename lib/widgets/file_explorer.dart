@@ -32,9 +32,9 @@ class _FileExplorerState extends State<FileExplorer> {
               itemBuilder: (context, index) {
                 return FileItem(
                   file: snapshot.data[index],
-                  onTap: () => _goToDirectory(context, basename(snapshot.data[index].path)),
-                  onDeleteFile: _deleteFile,
-                  onDetailsFile: () => _showFileDetails(context, snapshot.data[index].path)
+                  onTap: () => _goToDirectory(context, snapshot.data[index]),
+                  onDeleteFile: () => _deleteFile(snapshot.data[index]),
+                  onDetailsFile: () => _showFileDetails(context, snapshot.data[index])
                 );
               },
             );
@@ -105,26 +105,25 @@ class _FileExplorerState extends State<FileExplorer> {
     return files;
   }
 
-  _goToDirectory(BuildContext context, String directory) {
-    var path = join(widget.path, directory);
+  void _goToDirectory(BuildContext context, FileSystemEntity dir) {
     Navigator.of(context)
       .push(
         MaterialPageRoute(builder: (context) {
-          return FileExplorer(title: widget.title, path: path);
+          return FileExplorer(title: widget.title, path: dir.path);
         })
       );
   }
 
-  _showFileDetails(BuildContext context, path) {
+  void _showFileDetails(BuildContext context, FileSystemEntity file) {
     Navigator.of(context)
       .push(
         MaterialPageRoute(builder: (context) {
-          return FileDetails(title: widget.title, path: path);
+          return FileDetails(title: "File Details", file: file);
         })
       );
   }
 
-  _deleteFile(FileSystemEntity file) {
+  void _deleteFile(FileSystemEntity file) {
     setState(() {
       file.deleteSync(recursive: true);
     });
