@@ -22,7 +22,7 @@ class _CreateDirectoryState extends State<CreateDirectory> {
         child: Column(
           children: <Widget>[
             TextFormField(
-              textAlign: TextAlign.center,
+              initialValue: "NewFolder",
               onSaved: (val) {
                 setState(() {
                   Directory(join(widget.path, val)).createSync();
@@ -35,6 +35,15 @@ class _CreateDirectoryState extends State<CreateDirectory> {
 
                 return null;
               },
+              decoration: const InputDecoration(
+                
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.greenAccent, width: 4),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue, width: 4),
+                ),
+              ),
             )
           ],
         ),
