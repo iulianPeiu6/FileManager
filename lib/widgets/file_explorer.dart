@@ -35,7 +35,7 @@ class _FileExplorerState extends State<FileExplorer> {
                 var file = snapshot.data[index];
                 return FileItem(
                   file: file,
-                  onTap: () => file is File ? _openFile(context, file) : _goToDirectory(context, file),
+                  onOpen: () => file is File ? _openFile(context, file) : _goToDirectory(context, file),
                   onDeleteFile: () => _deleteFile(file),
                   onDetailsFile: () => _showFileDetails(context, file),
                   onRenameFile: () => _showRenameFileDialog(context, file),

@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 
 class FileItem extends StatefulWidget {
   final FileSystemEntity file;
-  final void Function() onTap;
+  final void Function() onOpen;
   final void Function() onDeleteFile;
   final void Function() onDetailsFile;
   final void Function() onRenameFile;
 
   const FileItem({
     Key? key,
-    required this.onTap,
+    required this.onOpen,
     required this.file,
     required this.onDeleteFile,
     required this.onDetailsFile,
@@ -57,7 +57,7 @@ class _FileItemState extends State<FileItem> {
         onSelected: (selectedItem) {
           switch(selectedItem) { 
             case "Open": { 
-              widget.onTap();
+              widget.onOpen();
             } 
             break; 
             case "Details": { 
@@ -76,7 +76,7 @@ class _FileItemState extends State<FileItem> {
         },
       ),
       subtitle: (widget.file is File) ? Text(_getFileDetails(widget.file)) : null,
-      onTap: widget.onTap,
+      onTap: widget.onOpen,
       onLongPress: widget.onDetailsFile,
     );
   }
