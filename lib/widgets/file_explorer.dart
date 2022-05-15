@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:filemanager/widgets/edit_file.dart';
+import 'package:filemanager/widgets/shared/create-directory.dart';
 import 'package:filemanager/widgets/shared/file_item.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -82,47 +83,9 @@ class _FileExplorerState extends State<FileExplorer> {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Form(
-            key: _keyDialogForm,
-            child: Column(
-              children: <Widget>[
-                TextFormField(
-                  textAlign: TextAlign.center,
-                  onSaved: (val) {
-                    setState(() {
-                      Directory(join(widget.path, val)).createSync();
-                    });
-                  },
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Enter a folder name';
-                    }
-
-                    return null;
-                  },
-                )
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                if (_keyDialogForm.currentState!.validate()) {
-                  _keyDialogForm.currentState!.save();
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Save')
-            ),
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Cancel')),
-          ],
-        );
-      });
+        return CreateDirectory(path: widget.path);
+      }
+    ).then((value) => setState(() { }));
   }
 
   Future _showCreateFileDialog(BuildContext context) {
@@ -281,8 +244,7 @@ class _FileExplorerState extends State<FileExplorer> {
             return EditFile(title: 'Edit ${basename(file.path)}', file: file);
           }
         )
-      )
-      .then((value) => setState(() { }));
+      ).then((value) => setState(() { }));
   }
 
   void _showFileDetails(BuildContext context, FileSystemEntity file) {
