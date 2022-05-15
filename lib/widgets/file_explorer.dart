@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:filemanager/widgets/edit_file.dart';
 import 'package:filemanager/widgets/shared/create-directory.dart';
+import 'package:filemanager/widgets/shared/create-file.dart';
 import 'package:filemanager/widgets/shared/file_item.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -89,86 +90,12 @@ class _FileExplorerState extends State<FileExplorer> {
   }
 
   Future _showCreateFileDialog(BuildContext context) {
-    String filename = "";
-    String fileContent = "";
     return showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Form(
-            key: _keyCreateFileDialogForm,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.only(bottom: 10),
-                  child: TextFormField(
-                    //textAlign: TextAlign.center,
-                    decoration: const InputDecoration(
-                      hintText: "NewFile",
-                      contentPadding: EdgeInsets.only(left: 14, right: 14),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.greenAccent, width: 4),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue, width: 4),
-                      ),
-                    ),
-                    onSaved: (val) {
-                      filename = val!;
-                    },
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Enter a file name';
-                      }
-
-                      return null;
-                    },
-                  ),
-                ),
-                TextFormField(
-                  //textAlign: TextAlign.center,
-                  maxLines: 10,
-                  decoration: const InputDecoration(
-                    hintText: "Add here the file content ...",
-                    contentPadding: EdgeInsets.only(left: 14, right: 14, top: 24, bottom: 14),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.greenAccent, width: 4),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue, width: 4),
-                    ),
-                  ),
-                  onSaved: (val) {
-                    fileContent = val!;
-                  },
-                  
-                )
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                if (_keyCreateFileDialogForm.currentState!.validate()) {
-                  _keyCreateFileDialogForm.currentState!.save();
-                  setState(() {
-                    var file = File(join(widget.path, filename));
-                    file.createSync();
-                    file.writeAsStringSync(fileContent);
-                  });
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Save')
-            ),
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Cancel')),
-          ],
-        );
-      });
+        return CreateFile(path: widget.path);
+      }
+    ).then((value) => setState(() { }));
   }
 
   Future _showRenameFileDialog(BuildContext context, FileSystemEntity file) {
