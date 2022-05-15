@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:filemanager/widgets/edit_file.dart';
-import 'package:filemanager/widgets/shared/create-directory.dart';
-import 'package:filemanager/widgets/shared/create-file.dart';
+import 'package:filemanager/widgets/shared/create_directory.dart';
+import 'package:filemanager/widgets/shared/create_file.dart';
 import 'package:filemanager/widgets/shared/file_item.dart';
+import 'package:filemanager/widgets/shared/rename_file.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'file_details.dart';
@@ -18,10 +19,6 @@ class FileExplorer extends StatefulWidget {
 }
 
 class _FileExplorerState extends State<FileExplorer> {
-  final GlobalKey<FormState> _keyDialogForm = GlobalKey<FormState>();
-  final GlobalKey<FormState> _keyRenameDialogForm = GlobalKey<FormState>();
-  final GlobalKey<FormState> _keyCreateFileDialogForm = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,6 +77,12 @@ class _FileExplorerState extends State<FileExplorer> {
     );
   }
 
+  Future<List<FileSystemEntity>> _files() async {
+    var dir = Directory(widget.path);
+    var files = dir.list().toList();
+    return files;
+  }
+
   Future _showCreateDirectoryDialog(BuildContext context) {
     return showDialog(
       context: context,
@@ -102,56 +105,9 @@ class _FileExplorerState extends State<FileExplorer> {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Form(
-            key: _keyRenameDialogForm,
-            child: Column(
-              children: <Widget>[
-                TextFormField(
-                  textAlign: TextAlign.center,
-                  onSaved: (val) {
-                    setState(() {
-                      var path = file.path;
-                      var lastSeparator = path.lastIndexOf(Platform.pathSeparator);
-                      var newPath = path.substring(0, lastSeparator + 1) + val!;
-                      file.renameSync(newPath);
-                    });
-                  },
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'File/directory name is required';
-                    }
-
-                    return null;
-                  },
-                )
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                if (_keyRenameDialogForm.currentState!.validate()) {
-                  _keyRenameDialogForm.currentState!.save();
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Save')
-            ),
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Cancel')),
-          ],
-        );
-      });
-  }
- 
-  Future<List<FileSystemEntity>> _files() async {
-    var dir = Directory(widget.path);
-    var files = dir.list().toList();
-    return files;
+        return RenameFile(file: file);
+      }
+    ).then((value) => setState(() { }));
   }
 
   void _goToDirectory(BuildContext context, FileSystemEntity dir) {

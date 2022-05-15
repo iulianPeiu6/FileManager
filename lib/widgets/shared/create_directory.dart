@@ -36,12 +36,14 @@ class _CreateDirectoryState extends State<CreateDirectory> {
                 return null;
               },
               decoration: const InputDecoration(
-                
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.greenAccent, width: 4),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.blue, width: 4),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.red, width: 4),
                 ),
               ),
             )
