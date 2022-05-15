@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:filemanager/widgets/edit_file.dart';
 import 'package:filemanager/widgets/shared/file_item.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -32,12 +33,13 @@ class _FileExplorerState extends State<FileExplorer> {
             return ListView.builder(
               itemCount: snapshot.data?.length ?? 0,
               itemBuilder: (context, index) {
+                var file = snapshot.data[index];
                 return FileItem(
-                  file: snapshot.data[index],
-                  onTap: () => _goToDirectory(context, snapshot.data[index]),
-                  onDeleteFile: () => _deleteFile(snapshot.data[index]),
-                  onDetailsFile: () => _showFileDetails(context, snapshot.data[index]),
-                  onRenameFile: () => _showRenameFileDialog(context, snapshot.data[index]),
+                  file: file,
+                  onTap: () => file is File ? _openFile(context, file) : _goToDirectory(context, file),
+                  onDeleteFile: () => _deleteFile(file),
+                  onDetailsFile: () => _showFileDetails(context, file),
+                  onRenameFile: () => _showRenameFileDialog(context, file),
                 );
               },
             );
@@ -269,6 +271,18 @@ class _FileExplorerState extends State<FileExplorer> {
           return FileExplorer(title: widget.title, path: dir.path);
         })
       );
+  }
+
+  void _openFile(context, file) {
+    Navigator.of(context)
+      .push(
+        MaterialPageRoute(
+          builder: (context) {
+            return EditFile(title: 'Edit ${basename(file.path)}', file: file);
+          }
+        )
+      )
+      .then((value) => setState(() { }));
   }
 
   void _showFileDetails(BuildContext context, FileSystemEntity file) {
