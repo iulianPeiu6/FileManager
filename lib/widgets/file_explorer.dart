@@ -47,17 +47,19 @@ class _FileExplorerState extends State<FileExplorer> {
       ),
       floatingActionButton: Stack(
         children: <Widget>[
-          Padding(padding: EdgeInsets.only(left:31),
-          child: Align(
-            alignment: Alignment.bottomLeft,
-            child: FloatingActionButton(
-              onPressed: () async {
-                _showCreateDirectoryDialog(context);
-              },
-              backgroundColor: Colors.blue,
-              child: const Icon(Icons.create_new_folder),
+          Padding(
+            padding: const EdgeInsets.only(left:31),
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: FloatingActionButton(
+                onPressed: () async {
+                  _showCreateDirectoryDialog(context);
+                },
+                backgroundColor: Colors.blue,
+                child: const Icon(Icons.create_new_folder),
+              ),
             ),
-          ),),
+          ),
 
           Align(
             alignment: Alignment.bottomRight,
@@ -122,6 +124,8 @@ class _FileExplorerState extends State<FileExplorer> {
   }
 
   Future _showCreateFileDialog(BuildContext context) {
+    String filename = "";
+    String fileContent = "";
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -130,20 +134,49 @@ class _FileExplorerState extends State<FileExplorer> {
             key: _keyCreateFileDialogForm,
             child: Column(
               children: <Widget>[
-                TextFormField(
-                  textAlign: TextAlign.center,
-                  onSaved: (val) {
-                    setState(() {
-                      File(join(widget.path, val)).createSync();
-                    });
-                  },
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Enter a file name';
-                    }
+                Container(
+                  padding: EdgeInsets.only(bottom: 10),
+                  child: TextFormField(
+                    //textAlign: TextAlign.center,
+                    decoration: const InputDecoration(
+                      hintText: "NewFile",
+                      contentPadding: EdgeInsets.only(left: 14, right: 14),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.greenAccent, width: 4),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue, width: 4),
+                      ),
+                    ),
+                    onSaved: (val) {
+                      filename = val!;
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter a file name';
+                      }
 
-                    return null;
+                      return null;
+                    },
+                  ),
+                ),
+                TextFormField(
+                  //textAlign: TextAlign.center,
+                  maxLines: 10,
+                  decoration: const InputDecoration(
+                    hintText: "Add here the file content ...",
+                    contentPadding: EdgeInsets.only(left: 14, right: 14, top: 24, bottom: 14),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.greenAccent, width: 4),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue, width: 4),
+                    ),
+                  ),
+                  onSaved: (val) {
+                    fileContent = val!;
                   },
+                  
                 )
               ],
             ),
@@ -153,6 +186,11 @@ class _FileExplorerState extends State<FileExplorer> {
               onPressed: () {
                 if (_keyCreateFileDialogForm.currentState!.validate()) {
                   _keyCreateFileDialogForm.currentState!.save();
+                  setState(() {
+                    var file = File(join(widget.path, filename));
+                    file.createSync();
+                    file.writeAsStringSync(fileContent);
+                  });
                   Navigator.pop(context);
                 }
               },
