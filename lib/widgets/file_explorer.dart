@@ -16,6 +16,8 @@ class FileExplorer extends StatefulWidget {
 
 class _FileExplorerState extends State<FileExplorer> {
   final GlobalKey<FormState> _keyDialogForm = GlobalKey<FormState>();
+  final GlobalKey<FormState> _keyRenameDialogForm = GlobalKey<FormState>();
+  final GlobalKey<FormState> _keyCreateFileDialogForm = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,8 @@ class _FileExplorerState extends State<FileExplorer> {
                   file: snapshot.data[index],
                   onTap: () => _goToDirectory(context, snapshot.data[index]),
                   onDeleteFile: () => _deleteFile(snapshot.data[index]),
-                  onDetailsFile: () => _showFileDetails(context, snapshot.data[index])
+                  onDetailsFile: () => _showFileDetails(context, snapshot.data[index]),
+                  onRenameFile: () => _showRenameFileDialog(context, snapshot.data[index]),
                 );
               },
             );
@@ -42,12 +45,31 @@ class _FileExplorerState extends State<FileExplorer> {
           return const Center(child: Text("Loading"));
         }
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          _showCreateDirectoryDialog(context);
-        },
-        backgroundColor: Colors.blue,
-        child: const Icon(Icons.create_new_folder),
+      floatingActionButton: Stack(
+        children: <Widget>[
+          Padding(padding: EdgeInsets.only(left:31),
+          child: Align(
+            alignment: Alignment.bottomLeft,
+            child: FloatingActionButton(
+              onPressed: () async {
+                _showCreateDirectoryDialog(context);
+              },
+              backgroundColor: Colors.blue,
+              child: const Icon(Icons.create_new_folder),
+            ),
+          ),),
+
+          Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              onPressed: () async {
+                _showCreateFileDialog(context);
+              },
+              backgroundColor: Colors.blue,
+              child: const Icon(Icons.note_add),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -84,6 +106,103 @@ class _FileExplorerState extends State<FileExplorer> {
               onPressed: () {
                 if (_keyDialogForm.currentState!.validate()) {
                   _keyDialogForm.currentState!.save();
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('Save')
+            ),
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel')),
+          ],
+        );
+      });
+  }
+
+  Future _showCreateFileDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Form(
+            key: _keyCreateFileDialogForm,
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  textAlign: TextAlign.center,
+                  onSaved: (val) {
+                    setState(() {
+                      File(join(widget.path, val)).createSync();
+                    });
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Enter a file name';
+                    }
+
+                    return null;
+                  },
+                )
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                if (_keyCreateFileDialogForm.currentState!.validate()) {
+                  _keyCreateFileDialogForm.currentState!.save();
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('Save')
+            ),
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel')),
+          ],
+        );
+      });
+  }
+
+  Future _showRenameFileDialog(BuildContext context, FileSystemEntity file) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Form(
+            key: _keyRenameDialogForm,
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  textAlign: TextAlign.center,
+                  onSaved: (val) {
+                    setState(() {
+                      var path = file.path;
+                      var lastSeparator = path.lastIndexOf(Platform.pathSeparator);
+                      var newPath = path.substring(0, lastSeparator + 1) + val!;
+                      file.renameSync(newPath);
+                    });
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'File/directory name is required';
+                    }
+
+                    return null;
+                  },
+                )
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                if (_keyRenameDialogForm.currentState!.validate()) {
+                  _keyRenameDialogForm.currentState!.save();
                   Navigator.pop(context);
                 }
               },

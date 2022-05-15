@@ -7,13 +7,15 @@ class FileItem extends StatefulWidget {
   final void Function() onTap;
   final void Function() onDeleteFile;
   final void Function() onDetailsFile;
+  final void Function() onRenameFile;
 
   const FileItem({
     Key? key,
     required this.onTap,
     required this.file,
     required this.onDeleteFile,
-    required this.onDetailsFile
+    required this.onDetailsFile,
+    required this.onRenameFile
   }) : super(key: key);
 
   @override
@@ -43,6 +45,10 @@ class _FileItemState extends State<FileItem> {
               child: Text("Details")
             ),
             const PopupMenuItem(
+              value: "Rename",
+              child: Text("Rename")
+            ),
+            const PopupMenuItem(
               value: "Delete",
               child: Text("Delete")
             ),
@@ -54,12 +60,14 @@ class _FileItemState extends State<FileItem> {
               widget.onTap();
             } 
             break; 
-
             case "Details": { 
               widget.onDetailsFile();
             } 
             break; 
-
+            case "Rename": { 
+              widget.onRenameFile();
+            } 
+            break; 
             case "Delete": { 
               widget.onDeleteFile();
             } 
