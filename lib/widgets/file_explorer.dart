@@ -32,10 +32,12 @@ class _FileExplorerState extends State<FileExplorer> {
         future: _files(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
+            var files = snapshot.data as List<FileSystemEntity>;
+            files.sort((f1, f2) => (f1 is Directory) ? -1 : 1);
             return ListView.builder(
-              itemCount: snapshot.data?.length ?? 0,
+              itemCount: files.length,
               itemBuilder: (context, index) {
-                var file = snapshot.data[index];
+                var file = files[index];
                 return FileItem(
                   file: file,
                   onOpen: () => file is File ? _openFile(context, file) : _goToDirectory(context, file),
@@ -86,7 +88,9 @@ class _FileExplorerState extends State<FileExplorer> {
 
   Future<List<FileSystemEntity>> _files() async {
     var dir = Directory(widget.path);
-    var files = dir.list().toList();
+    var files = dir.list()
+      .toList();
+
     return files;
   }
 
@@ -162,7 +166,7 @@ class _FileExplorerState extends State<FileExplorer> {
           cutFile ? "File copied" : "File cutted",
           textAlign: TextAlign.center,
         ),
-        duration: Duration(seconds: 1),
+        duration: const Duration(seconds: 1),
       ));
   }
 
