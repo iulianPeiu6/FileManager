@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:filemanager/widgets/file_explorer.dart';
 import 'package:path/path.dart';
 import 'package:flutter/material.dart';
 
@@ -8,6 +9,8 @@ class FileItem extends StatefulWidget {
   final void Function() onDeleteFile;
   final void Function() onDetailsFile;
   final void Function() onRenameFile;
+  final void Function(bool cutFile) onCopyFile;
+  final void Function() onPasteFile;
 
   const FileItem({
     Key? key,
@@ -15,7 +18,9 @@ class FileItem extends StatefulWidget {
     required this.file,
     required this.onDeleteFile,
     required this.onDetailsFile,
-    required this.onRenameFile
+    required this.onRenameFile,
+    required this.onCopyFile,
+    required this.onPasteFile,
   }) : super(key: key);
 
   @override
@@ -23,8 +28,6 @@ class FileItem extends StatefulWidget {
 }
 
 class _FileItemState extends State<FileItem> {
-  var fileOptions = [ _FileOption.open, _FileOption.details, _FileOption.rename, _FileOption.delete ];
-
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -45,12 +48,25 @@ class _FileItemState extends State<FileItem> {
               child: Text("Details")
             ),
             const PopupMenuItem(
-              value: "Rename",
-              child: Text("Rename")
+              value: "Copy",
+              child: Text("Copy")
+            ),
+            const PopupMenuItem(
+              value: "Cut",
+              child: Text("Cut")
+            ),
+            PopupMenuItem(
+              value: "Paste",
+              child: const Text("Paste"),
+              enabled: FileExplorer.copiedFile == null || widget.file is File ? false : true,
             ),
             const PopupMenuItem(
               value: "Delete",
               child: Text("Delete")
+            ),
+            const PopupMenuItem(
+              value: "Rename",
+              child: Text("Rename")
             ),
           ];
         },
@@ -62,6 +78,18 @@ class _FileItemState extends State<FileItem> {
             break; 
             case "Details": { 
               widget.onDetailsFile();
+            } 
+            break; 
+            case "Copy": { 
+              widget.onCopyFile(false);
+            } 
+            break; 
+            case "Cut": { 
+              widget.onCopyFile(true);
+            } 
+            break;
+            case "Paste": { 
+              widget.onPasteFile();
             } 
             break; 
             case "Rename": { 

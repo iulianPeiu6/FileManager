@@ -11,6 +11,8 @@ import 'file_details.dart';
 class FileExplorer extends StatefulWidget {
   const FileExplorer({Key? key, required this.title, required this.path}) : super(key: key);
 
+  static FileSystemEntity? copiedFile;
+  static bool? cutFile;  
   final String title;
   final String path;
 
@@ -19,6 +21,7 @@ class FileExplorer extends StatefulWidget {
 }
 
 class _FileExplorerState extends State<FileExplorer> {
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,6 +41,8 @@ class _FileExplorerState extends State<FileExplorer> {
                   onOpen: () => file is File ? _openFile(context, file) : _goToDirectory(context, file),
                   onDeleteFile: () => _deleteFile(file),
                   onDetailsFile: () => _showFileDetails(context, file),
+                  onCopyFile: (cutFile) => _copyFile(context, file, cutFile),
+                  onPasteFile: () => _pasteFile(context, file),
                   onRenameFile: () => _showRenameFileDialog(context, file),
                 );
               },
@@ -53,6 +58,7 @@ class _FileExplorerState extends State<FileExplorer> {
             child: Align(
               alignment: Alignment.bottomLeft,
               child: FloatingActionButton(
+                heroTag: null,
                 onPressed: () async {
                   _showCreateDirectoryDialog(context);
                 },
@@ -65,6 +71,7 @@ class _FileExplorerState extends State<FileExplorer> {
           Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
+              heroTag: null,
               onPressed: () async {
                 _showCreateFileDialog(context);
               },
@@ -144,4 +151,53 @@ class _FileExplorerState extends State<FileExplorer> {
       file.deleteSync(recursive: true);
     });
   }
+
+  void _copyFile(BuildContext context, FileSystemEntity file, bool cutFile) {
+    FileExplorer.copiedFile = file;
+    FileExplorer.cutFile = cutFile;
+    ScaffoldMessenger.of(context)
+      .showSnackBar(SnackBar(
+        backgroundColor: Colors.green,
+        content: Text(
+          cutFile ? "File copied" : "File cutted",
+          textAlign: TextAlign.center,
+        ),
+        duration: Duration(seconds: 1),
+      ));
+  }
+
+  void _pasteFile(BuildContext context, FileSystemEntity destination) {
+    if (FileExplorer.copiedFile is Directory) {
+      destination = Directory(join(destination.absolute.path, basename(FileExplorer.copiedFile!.path)));
+      (destination as Directory).createSync();
+      _pasteDirectoryRecursive(FileExplorer.copiedFile as Directory, destination);
+      
+    } 
+    else {
+      var file = FileExplorer.copiedFile as File;
+      var toPath = join(destination.path, basename(FileExplorer.copiedFile!.path));
+      file.copySync(toPath);
+    }
+
+    if (FileExplorer.cutFile!) {
+      FileExplorer.copiedFile?.deleteSync(recursive: true);
+      FileExplorer.copiedFile = null;
+      FileExplorer.cutFile = null;
+    }
+
+    setState(() { });
+  }
+
+  void _pasteDirectoryRecursive(Directory source, Directory destination) =>
+    source.listSync(recursive: false)
+      .forEach((var entity) {
+        if (entity is Directory) {
+          var newDirectory = Directory(join(destination.absolute.path, basename(entity.path)));
+          newDirectory.createSync();
+          
+          _pasteDirectoryRecursive(entity.absolute, newDirectory);
+        } else if (entity is File) {
+          entity.copySync(join(destination.path, basename(entity.path)));
+        }
+  });
 }

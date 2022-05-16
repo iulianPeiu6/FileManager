@@ -52,7 +52,6 @@ class _CreateFileState extends State<CreateFile> {
               ),
             ),
             TextFormField(
-              //textAlign: TextAlign.center,
               maxLines: 10,
               decoration: const InputDecoration(
                 hintText: "Add here the file content ...",
