@@ -6,7 +6,7 @@ import 'package:filemanager/widgets/shared/file_item.dart';
 import 'package:filemanager/widgets/shared/rename_file.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
-import 'file_details.dart';
+import 'shared/file_details.dart';
 
 class FileExplorer extends StatefulWidget {
   const FileExplorer({Key? key, required this.title, required this.path}) : super(key: key);
@@ -141,13 +141,13 @@ class _FileExplorerState extends State<FileExplorer> {
       ).then((value) => setState(() { }));
   }
 
-  void _showFileDetails(BuildContext context, FileSystemEntity file) {
-    Navigator.of(context)
-      .push(
-        MaterialPageRoute(builder: (context) {
-          return FileDetails(title: "File Details", file: file);
-        })
-      );
+  Future _showFileDetails(BuildContext context, FileSystemEntity file) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return FileDetails(title: "File Details", file: file);
+      }
+    );
   }
 
   void _deleteFile(FileSystemEntity file) {
